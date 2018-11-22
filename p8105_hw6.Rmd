@@ -1,0 +1,17 @@
+---
+title: "P8105_hw6"
+author: "Jingyu Xu"
+date: "2018/11/22"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+#Problem 1 
+```{r}
+library(tidyverse)
+homcide = read.csv( file = "./homicide-data.csv")
+```
+
