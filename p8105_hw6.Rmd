@@ -12,6 +12,19 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 #Problem 1 
 ```{r}
 library(tidyverse)
-homcide = read.csv( file = "./homicide-data.csv")
+set.seed(1)
+homcide = read.csv( file = "./data/homicide-data.csv")
+```
+
+Create a city_state variable (e.g. “Baltimore, MD”), and a binary variable indicating whether the homicide is solved. Omit cities Dallas, TX; Phoenix, AZ; and Kansas City, MO – these don’t report victim race. Also omit Tulsa, AL – this is a data entry mistake. Modifiy victim_race to have categories white and non-white, with white as the reference category. Be sure that victim_age is numeric.
+
+###data cleaning
+```{r}
+homcide= homcide%>%
+  janitor::clean_names()%>%
+  mutate(city_state = str_c(city, ",", state))%>%
+  subset(!city_state %in% c("Dallas,TX","Phoenix,AZ","Kansas City,MO","Tulsa,AL"))%>%
+  mutate(victim_race = ifelse(victim_race != "White", "non-white", "white"))%>%
+  mutate(victim_age = as.numeric(victim_age), victim_race = fct_relevel(victim_race, "white"))
 ```
 
