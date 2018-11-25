@@ -47,3 +47,26 @@ fit_logistic =
 knitr::kable(fit_logistic)
 ```
 
+###glm for all the cities in the dataset
+Now run glm for each of the cities in your dataset, and extract the adjusted odds ratio (and CI) for solving homicides comparing non-white victims to white victims. Do this within a “tidy” pipeline, making use of purrr::map, list columns, and unnest as necessary to create a dataframe with estimated ORs and CIs for each city.
+
+```{r}
+##exclude more city with unknown victim-race
+homcide1 = homcide%>%
+  filter(victim_race != "unknown")%>%
+  mutate(resolved = as.numeric(disposition == "Closed by arrest"))
+
+nest_lm_res =
+  homcide1 %>% 
+  group_by(city_state) %>% 
+  nest() %>% 
+  mutate(models = map(data, ~glm(resolved ~ victim_age + victim_race + victim_sex, data = .x, family = binomial())),
+         models = map(models, broom::tidy)) %>% 
+  select(-data) %>% 
+  unnest()%>%
+  mutate(OR = exp(estimate), conf.low = exp(estimate - qnorm(0.975)*std.error), conf.high = exp(estimate + qnorm(0.975)*std.error))%>%
+  filter(term == "victim_racenon-white")%>%
+  select(city_state,term,OR, conf.low,conf.high)
+
+knitr::kable(nest_lm_res)
+```
