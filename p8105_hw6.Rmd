@@ -70,3 +70,18 @@ nest_lm_res =
 
 knitr::kable(nest_lm_res)
 ```
+
+Create a plot that shows the estimated ORs and CIs for each city. Organize cities according to estimated OR, and comment on the plot.
+```{r}
+nest_lm_res%>%
+            mutate(city_state = fct_reorder(city_state, OR))%>%
+            ggplot(aes(x = city_state, y = OR))+
+            geom_point()+
+            geom_errorbar(aes(ymin = conf.low, ymax= conf.high))+
+            theme(axis.text.x =  element_text(angle = 80))+
+            labs(
+              title = "the estimated OR and CIs for solving homcide comparing non-white to white victims across the U.S.",
+              x = "city",
+              y = "estimates and CIs"
+            )
+```
