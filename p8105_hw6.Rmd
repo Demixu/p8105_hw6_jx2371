@@ -165,3 +165,19 @@ cv_df =
          rmse_B = map2_dbl(model_B, test, ~rmse(model = .x, data = .y)))
 ```
 
+A code chunk is used to show a violin plot in terms of the cross-validated prediction error(RMSE), comparing my own models with two others.
+```{r}
+cv_df %>% 
+  select(starts_with("rmse")) %>% 
+  gather(key = model, value = rmse) %>% 
+  mutate(model = str_replace(model, "rmse_", ""),
+         model = fct_inorder(model)) %>% 
+  ggplot(aes(x = model, y = rmse)) + 
+  geom_violin() +
+  labs(title = "Comparison between my own models and two other regression models",
+        x = "Regression model",
+        y = "RMSE")
+```
+
+From the plot, we observe that my own model(using stepwise) has the least RMSE, which means that it has good prediction ability. And the model using length at birth and gestational age as predictors (main effects only) has the highest RMSE. However, we have to notice that the model using head circumference, length, sex, and all interactions (including the three-way interaction) also has a low RMSE, which is slightly higher than our own model. In the further construction of our regression model, we may consider exploring the influence of interaction between variables.
+
