@@ -111,3 +111,35 @@ summary(birthweight)
 sum(is.na(birthweight))
 ```
 
+We can see that there is no missing data in the dataset.
+
+
+###construct own regression model
+I use stepwise regression to construct the multiple linear regression models for birthweight.
+```{r}
+mlr = lm(bwt ~ ., data = birthweight)
+step(mlr, direction = 'both')
+```
+
+After the stepwise procedure,  we get a optimal(not globle) model based on the selection rule.(bwt ~ babysex + bhead + blength + delwt + fincome + gaweeks + mheight + mrace + parity + ppwt + smoken). So I Save the output of final glm as an R object
+```{r}
+mlr_own = lm( bwt ~ babysex + bhead + blength + delwt + fincome + 
+    gaweeks + mheight + mrace + parity + ppwt + smoken, data = birthweight)
+```
+
+### show a plot of model residuals against fitted values
+
+```{r}
+library(modelr)
+birthweight %>% 
+  add_predictions(mlr_own) %>% 
+  add_residuals(mlr_own) %>% 
+  ggplot(aes(x = pred, y = resid)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE) + 
+  labs(title = "Model Residuals against Fitted Values",
+        x = "Fitted values",
+        y = "Residuals of model")
+```
+
+From the graph, We observe that when the predictions are bewteen 2000 and 4000, the residuals are almost evenly settled around zero. However, when the fitted values are in the other intervals, the trend of distribution is quite different from that of [2000,4000] and is not evenly distributed. So we can conclude that this model doesn't fit when the predicted value is less than 2000 or larger than 4000.
