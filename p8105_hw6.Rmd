@@ -143,3 +143,25 @@ birthweight %>%
 ```
 
 From the graph, We observe that when the predictions are bewteen 2000 and 4000, the residuals are almost evenly settled around zero. However, when the fitted values are in the other intervals, the trend of distribution is quite different from that of [2000,4000] and is not evenly distributed. So we can conclude that this model doesn't fit when the predicted value is less than 2000 or larger than 4000.
+
+### compare own models to two other models
+Now, compare my own model to two others:
+1)I denote the own model as model_own
+2)Construct one using length at birth and gestational age as predictors (main effects only) and denote it as model_A
+3)Construct One using head circumference, length, sex, and all interactions (including the three-way interaction) between these and denote it as model_B
+
+```{r}
+#construct cross-validation 
+cv_df = 
+  crossv_mc(birthweight, 100) %>%
+  mutate(train = map(train, as_tibble),
+         test = map(test, as_tibble)) %>% 
+  mutate(model_own = map(train, ~lm(bwt ~  babysex + bhead + blength + delwt + fincome + 
+    gaweeks + mheight + mrace + parity + ppwt + smoken, data = .x)),
+         model_A = map(train, ~lm(bwt ~ blength + gaweeks, data = .x)),
+         model_B = map(train, ~lm(bwt ~ (bhead + blength + babysex)^4, data = .x)),
+         rmse_own = map2_dbl(model_own, test, ~rmse(model = .x, data = .y)),
+         rmse_A = map2_dbl(model_A, test, ~rmse(model = .x, data = .y)),
+         rmse_B = map2_dbl(model_B, test, ~rmse(model = .x, data = .y)))
+```
+
