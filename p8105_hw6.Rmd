@@ -90,3 +90,24 @@ y = "estimates and CIs"
 ```
 
 In the graph, I use odds ratio = 1.0 as a cut-off line. We can observe that there are only three cities (Durham, NC; Birmingham, AL; Tampa, FL) which have the estimated odds ratio over 1.0, indicating that the odds of solving non-white victims is larger than the odds of solving white victims. Also, we can observe that Boston has the least odds ratio.
+
+#Problem 2
+###data cleaning
+Firstly, a code chunk is used to load and clean the data for regression analysis:
+1)convert some variables to factor, based on the meaning in the real application.
+2)use summary function to see whether there are "unknown" observation.
+3)use sum(is.na()) to check whether there are missing data.
+```{r}
+birthweight = read_csv("./data/birthweight.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    babysex = as.factor(babysex), 
+    frace = as.factor(frace), 
+    malform = as.factor(malform), 
+    mrace = as.factor(mrace))
+# check for unknown observation
+summary(birthweight)
+#check for missing data
+sum(is.na(birthweight))
+```
+
